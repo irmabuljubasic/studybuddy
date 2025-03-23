@@ -1,0 +1,13 @@
+# Node modules – nicht versionieren
+frontend/node_modules
+backend/node_modules
+
+# Build-Ordner
+frontend/dist
+backend/dist
+
+# Umgebungsvariablen
+*.env
+
+# Mac-spezifische Dateien
+.DS_Store
