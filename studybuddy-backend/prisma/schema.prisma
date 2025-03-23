@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String          @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String          @unique
+  password        String
+  offers          Offer[]
+  studentRequests LessonRequest[] @relation(name: "StudentRequests")
+  tutorRequests   LessonRequest[] @relation(name: "TutorRequests")
+}
+
+model Offer {
+  id            String          @id @default(uuid())
+  subject       String
+  description   String
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime        @default(now())
+  LessonRequest LessonRequest[]
+}
+
+model LessonRequest {
+  id        String   @id @default(uuid())
+  studentId String
+  tutorId   String
+  offerId   String
+  status    String   @default("pending") // Status: pending, accepted, rejected
+  createdAt DateTime @default(now())
+
+  student User  @relation(fields: [studentId], references: [id], name: "StudentRequests")
+  tutor   User  @relation(fields: [tutorId], references: [id], name: "TutorRequests")
+  offer   Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+}
