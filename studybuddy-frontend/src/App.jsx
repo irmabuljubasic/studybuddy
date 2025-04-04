@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // All
-import StartScreen from "./pages/Public/StartCard";
+import StartCard from "./pages/Public/StartCard";
 import Login from "./pages/Public/Login";
 import Register from "./pages/Public/Register";
 
