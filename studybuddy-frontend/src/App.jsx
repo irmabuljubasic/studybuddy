@@ -16,7 +16,7 @@ import NNAnfragen from "./pages/NN/Anfragen";
 import NNProfil from "./pages/NN/Profil";
 
 // Admin
-import AdminDashboard from "./pages/Admin/AdminDashboard";
+// import AdminDashboard from "./pages/Admin/AdminDashboard";
 
 function App() {
   return (

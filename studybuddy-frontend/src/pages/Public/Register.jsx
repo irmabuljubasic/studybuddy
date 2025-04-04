@@ -1,0 +1,10 @@
+class Register extends Component {
+    state = {}
+    render() {
+        return (
+            <p>login</p>
+        );
+    }
+}
+
+export default Register;
