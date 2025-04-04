@@ -1,10 +1,9 @@
-class Register extends Component {
-    state = {}
-    render() {
-        return (
-            <p>login</p>
-        );
-    }
-}
+const Register = () => {
+    return (
+        <div className="text-blue-600 text-2xl text-center mt-20">
+            ✅ Register-Seite läuft!
+        </div>
+    );
+};
 
 export default Register;
