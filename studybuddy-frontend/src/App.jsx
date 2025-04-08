@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // All
 import StartCard from "./pages/Public/StartCard";
+import Auswahl from "./pages/Public/Auswahl";
 import Login from "./pages/Public/Login";
 import Register from "./pages/Public/Register";
 
@@ -24,6 +25,7 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<StartCard />} />
+        <Route path="/auswahl" element={<Auswahl />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
