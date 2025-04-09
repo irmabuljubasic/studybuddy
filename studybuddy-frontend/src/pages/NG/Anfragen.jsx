@@ -70,7 +70,7 @@ const NGAnfragen = () => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-10 h-10 bg-fuchsia-600 rounded-full text-white flex items-center justify-center font-bold">
+                                <div className="w-10 h-10 bg-pink rounded-full text-white flex items-center justify-center font-bold">
                                     o
                                 </div>
                                 <div className="w-10 h-10 bg-neutral-500 rounded-full text-white flex items-center justify-center font-bold">

@@ -12,7 +12,7 @@ const Login = () => {
 
         // Hier später: API-Call machen
 
-        // Weiterleitung je nach Rolle
+        // Weiterleitung je nach Rolle NG und NN
         if (rolle === "ng") {
             navigate("/ng/profil");
         } else if (rolle === "nn") {

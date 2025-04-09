@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/studybuddy-logo.png";
 
-const Profil = () => {
+const NGProfil = () => {
     const navigate = useNavigate();
 
     const handleGoToStartseite = () => {
@@ -24,14 +24,15 @@ const Profil = () => {
                 className="w-48 mt-8"
             />
 
-            {/* Profil Info */}
-            <div className="w-72 h-16 bg-neutral-200 mt-8 rounded flex items-center p-2">
-                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-xs">Foto</div>
-                <div className="ml-4">
-                    <p className="text-lg font-medium">Vorname Nachname</p>
-                    <p className="text-sm">Email-Adresse</p>
+            {/* Header mit Profilbild und Infos */}
+            <div className="w-80 bg-gray-200 rounded p-3 flex items-center gap-4 shadow-md">
+                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-xs">Foto</div>
+                <div className="flex flex-col">
+                    <span className="text-black font-bold leading-none">Vorname</span>
+                    <span className="text-black font-bold leading-none">Nachname</span>
+                    <span className="text-black text-sm leading-none">Email-Adresse</span>
                 </div>
-                <button className="ml-auto text-xs text-white bg-pink px-2 py-1 rounded">löschen</button>
+                <button className="ml-auto bg-pink text-white text-sm px-2 py-1 rounded">löschen</button>
             </div>
 
             {/* Fächer bearbeiten */}
@@ -111,4 +112,4 @@ const Profil = () => {
     );
 };
 
-export default Profil;
+export default NGProfil;

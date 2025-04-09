@@ -12,7 +12,7 @@ import NGAnfragen from "./pages/NG/Anfragen";
 import NGProfil from "./pages/NG/Profil";
 
 // NN
-import NNStart from "./pages/NN/Startseite";
+import NNStartseite from "./pages/NN/Startseite";
 import NNAnfragen from "./pages/NN/Anfragen";
 import NNProfil from "./pages/NN/Profil";
 
@@ -35,7 +35,7 @@ function App() {
         <Route path="/ng/profil" element={<NGProfil />} />
 
         {/* Nachhilfe-Nehmende (N.n) */}
-        <Route path="/nn/start" element={<NNStart />} />
+        <Route path="/nn/start" element={<NNStartseite />} />
         <Route path="/nn/anfragen" element={<NNAnfragen />} />
         <Route path="/nn/profil" element={<NNProfil />} />
 
