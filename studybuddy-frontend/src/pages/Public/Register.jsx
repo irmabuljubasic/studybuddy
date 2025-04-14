@@ -18,19 +18,50 @@ const Register = () => {
     const [passwort, setPasswort] = useState("");
     const [selectedSubjects, setSelectedSubjects] = useState([]);
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         const rolle = localStorage.getItem("rolle");
 
-        // Hier später: API-Call für Registrierung
+        const userData = {
+            vorname,
+            nachname,
+            email,
+            passwort,
+            rolle,
+            faecher: selectedSubjects.map((s) => s.value), // nur die Werte (z.B. "Mathe")
+            bemerkung: "" // kannst du auch später hinzufügen
+        };
 
-        if (rolle === "ng") {
-            navigate("/ng/profil");
-        } else if (rolle === "nn") {
-            navigate("/nn/profil");
-        } else {
-            navigate("/");
+        try {
+            const res = await fetch("http://localhost:5000/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(userData)
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                console.log("Registrierung erfolgreich:", data);
+
+                // Weiterleitung zur passenden Seite
+                if (rolle === "ng") {
+                    navigate("/ng/profil");
+                } else if (rolle === "nn") {
+                    navigate("/nn/profil");
+                } else {
+                    navigate("/");
+                }
+            } else {
+                alert("Fehler bei der Registrierung: " + data.message || "Unbekannter Fehler");
+            }
+        } catch (error) {
+            console.error("Fehler beim API-Call:", error);
+            alert("Verbindung zum Server fehlgeschlagen.");
         }
     };
+
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
