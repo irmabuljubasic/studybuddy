@@ -21,46 +21,42 @@ const Register = () => {
     const handleRegister = async () => {
         const rolle = localStorage.getItem("rolle");
 
-        const userData = {
-            vorname,
-            nachname,
-            email,
-            passwort,
-            rolle,
-            faecher: selectedSubjects.map((s) => s.value), // nur die Werte (z.B. "Mathe")
-            bemerkung: "" // kannst du auch später hinzufügen
-        };
-
         try {
-            const res = await fetch("http://localhost:5000/api/auth/register", {
+            await fetch("http://localhost:5000/api/auth/register", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(userData)
+                body: JSON.stringify({
+                    vorname,
+                    nachname,
+                    email,
+                    passwort,
+                    faecher: selectedSubjects.map((s) => s.value),
+                }),
             });
 
-            const data = await res.json();
+            //speichern in localStorage
+            localStorage.setItem("user", JSON.stringify({
+                vorname,
+                nachname,
+                email,
+                faecher: selectedSubjects.map((s) => s.value),
+            }));
 
-            if (res.ok) {
-                console.log("Registrierung erfolgreich:", data);
-
-                // Weiterleitung zur passenden Seite
-                if (rolle === "ng") {
-                    navigate("/ng/profil");
-                } else if (rolle === "nn") {
-                    navigate("/nn/profil");
-                } else {
-                    navigate("/");
-                }
+            //Navigation
+            if (rolle === "ng") {
+                navigate("/ng/profil");
+            } else if (rolle === "nn") {
+                navigate("/nn/profil");
             } else {
-                alert("Fehler bei der Registrierung: " + data.message || "Unbekannter Fehler");
+                navigate("/");
             }
         } catch (error) {
-            console.error("Fehler beim API-Call:", error);
-            alert("Verbindung zum Server fehlgeschlagen.");
+            console.error("Fehler beim Registrieren:", error);
         }
     };
+
 
 
     return (
