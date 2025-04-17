@@ -3,11 +3,6 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-//nur test, kommt wieder weg
-router.get("/test", (req, res) => {
-  res.status(200).json({ message: "Test OK!" });
-});
-
 // Registrierung
 router.post("/register", async (req, res) => {
   try {
