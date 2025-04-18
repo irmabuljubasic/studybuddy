@@ -11,13 +11,6 @@ router.post("/register", async (req, res) => {
     console.log("📩 Eingehende Daten:", req.body);
     const { vorname, nachname, email, passwort, faecher, rolle } = req.body;
 
-    // Fächer zur Sicherheit immer als Array behandeln
-const sichereFaecher = Array.isArray(faecher)
-  ? faecher
-  : String(faecher).split(",").map((f) => f.trim());
-
-console.log("💥 Sicherheitscheck faecher:", sichereFaecher);
-
     const newUser = new User({
       vorname,
       nachname,

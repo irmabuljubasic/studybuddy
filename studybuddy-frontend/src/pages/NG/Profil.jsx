@@ -12,15 +12,41 @@ const NGProfil = () => {
         user?.faecher?.map((fach) => ({ value: fach, label: fach })) || []
     );
 
-    const saveSubjects = () => {
+    //Fächer bearbeitung speichern
+    const saveSubjects = async () => {
         const updated = {
             ...user,
             faecher: selectedSubjects.map((s) => s.value),
         };
-        localStorage.setItem("user", JSON.stringify(updated));
-        setUser(updated);
-        setEditMode(false);
+
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/update/" + user.email, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    vorname: updated.vorname,
+                    nachname: updated.nachname,
+                    email: updated.email,
+                    faecher: updated.faecher,
+                }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem("user", JSON.stringify(data.user));
+                setUser(data.user);
+                setEditMode(false);
+            } else {
+                alert("Fehler beim Speichern: " + data.message);
+            }
+        } catch (error) {
+            console.error("Fehler beim Aktualisieren:", error);
+            alert("Ein Fehler ist aufgetreten.");
+        }
     };
+
 
     const subjects = [
         "Mathe", "Deutsch", "Englisch", "NW(Chemie, Physik)", "Ggp", "Infi", "Swp",
