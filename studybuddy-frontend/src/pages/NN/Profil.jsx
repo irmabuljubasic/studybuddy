@@ -96,102 +96,88 @@ const NNProfil = () => {
         "Wsft", "Rsor", "Sein"
     ].map((fach) => ({ value: fach, label: fach }));
 
+    
     return (
         <div className="w-full min-h-screen bg-white flex flex-col items-center pb-20">
-            <img src={logo} alt="StudyBuddy Logo" className="w-48 mt-8" />
+            <img src={logo} alt="StudyBuddy Logo" className="w-40 mt-8" />
 
-            <div className="w-80 bg-gray-200 rounded p-3 flex items-center gap-4 shadow-md mt-4">
-                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-xs">
-                    Foto
-                </div>
-                <div className="flex flex-col">
-                    <span className="text-black font-bold leading-none">{user?.vorname}</span>
-                    <span className="text-black font-bold leading-none">{user?.nachname}</span>
-                    <span className="text-black text-sm leading-none">{user?.email}</span>
-                </div>
-                <button className="ml-auto bg-pink text-white text-sm px-2 py-1 rounded">löschen</button>
+            {/* Profil Header */}
+            <div className="w-80 bg-gray-200 rounded p-4 flex flex-col items-center shadow-md mt-4">
 
+                <span className="text-black font-bold text-lg">{user?.vorname} {user?.nachname}</span>
+                <span className="text-black text-sm">{user?.email}</span>
+            </div>
 
-                {/* Fächer bearbeiten */}
-                <div className="w-80 mt-4">
-                    <label className="block font-semibold text-black mb-1">Fächer</label>
-                    {editMode ? (
-                        <>
-                            <Select
-                                options={subjects}
-                                isMulti
-                                value={selectedSubjects}
-                                onChange={setSelectedSubjects}
-                                className="mt-1"
-                            />
-                            <div className="text-right text-sm mt-1 text-blue-600 cursor-pointer" onClick={saveSubjects}>
-                                speichern
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="w-full bg-zinc-300 p-2 rounded text-black min-h-[3rem]">
-                                {user?.faecher?.length > 0 ? user.faecher.join(", ") : "Keine Fächer angegeben"}
-                            </div>
-                            <div className="text-right text-sm mt-1 text-blue-600 cursor-pointer" onClick={() => setEditMode(true)}>
-                                bearbeiten
-                            </div>
-                        </>
-                    )}
+            {/* Löschen Button */}
+            <button className="mt-3 bg-pink text-white text-sm px-4 py-1 rounded shadow">
+                löschen
+            </button>
 
-                </div>
-                {/* Bemerkung */}
-                <div className="w-80 mt-6">
-                    <label className="block font-semibold text-black mb-1">Bemerkung</label>
-                    {editBemerkung ? (
-                        <>
-                            <textarea
-                                value={bemerkung}
-                                onChange={(e) => setBemerkung(e.target.value)}
-                                className="w-full h-24 bg-zinc-300 rounded px-2 py-1 text-black"
-                            ></textarea>
-                            <div
-                                onClick={saveBemerkung}
-                                className="text-right text-sm mt-1 text-blue-600 cursor-pointer"
-                            >
-                                speichern
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="w-full bg-zinc-300 p-2 rounded text-black min-h-[3rem] whitespace-pre-wrap">
-                                {bemerkung || "Keine Bemerkung vorhanden"}
-                            </div>
-                            <div
-                                onClick={() => setEditBemerkung(true)}
-                                className="text-right text-sm mt-1 text-blue-600 cursor-pointer"
-                            >
-                                bearbeiten
-                            </div>
-                        </>
-                    )}
-                </div>
-
-                <div className="w-full fixed bottom-0 flex justify-around">
-                    <button
-                        onClick={() => navigate("/nn/profil")}
-                        className="w-1/3 h-14 bg-pink text-white text-lg font-medium"
+            {/* Fächer Box */}
+            <div className="w-80 bg-zinc-200 rounded p-4 mt-8">
+                <div className="flex justify-between items-start mb-2">
+                    <label className="block font-semibold text-black">Fächer</label>
+                    <span
+                        className="text-sm text-blue-600 cursor-pointer"
+                        onClick={() => editMode ? saveSubjects() : setEditMode(true)}
                     >
-                        Profil
-                    </button>
-                    <button
-                        onClick={() => navigate("/nn/start")}
-                        className="w-1/3 h-14 bg-gradient-to-b from-zinc-300 via-stone-300 to-neutral-500 text-white text-lg font-medium"
-                    >
-                        Startseite
-                    </button>
-                    <button
-                        onClick={() => navigate("/nn/anfragen")}
-                        className="w-1/3 h-14 bg-gradient-to-b from-zinc-300 via-stone-300 to-neutral-500 text-white text-lg font-medium"
-                    >
-                        Anfragen
-                    </button>
+                        {editMode ? "speichern" : "bearbeiten"}
+                    </span>
                 </div>
+                {editMode ? (
+                    <Select
+                        options={subjects}
+                        isMulti
+                        value={selectedSubjects}
+                        onChange={setSelectedSubjects}
+                        className="text-sm"
+                    />
+                ) : (
+                    <div className="min-h-[3rem] text-black">
+                        {user?.faecher?.length > 0 ? user.faecher.join(", ") : "Keine Fächer angegeben"}
+                    </div>
+                )}
+            </div>
+
+            {/* Bemerkung Box */}
+            <div className="w-80 bg-zinc-200 rounded p-4 mt-4">
+                <div className="flex justify-between items-start mb-2">
+                    <label className="block font-semibold text-black">Bemerkung</label>
+                    <span
+                        className="text-sm text-blue-600 cursor-pointer"
+                        onClick={() => editBemerkung ? saveBemerkung() : setEditBemerkung(true)}
+                    >
+                        {editBemerkung ? "speichern" : "bearbeiten"}
+                    </span>
+                </div>
+                {editBemerkung ? (
+                    <textarea
+                        value={bemerkung}
+                        onChange={(e) => setBemerkung(e.target.value)}
+                        className="w-full h-24 bg-zinc-300 rounded px-2 py-1 text-black"
+                    />
+                ) : (
+                    <div className="min-h-[3rem] text-black whitespace-pre-wrap">
+                        {bemerkung || "Keine Bemerkung vorhanden"}
+                    </div>
+                )}
+            </div>
+
+            {/* Bottom Navigation */}
+            <div className="fixed bottom-0 left-0 w-full flex">
+                <button className="w-1/3 h-14 bg-pink text-white text-lg font-medium">Profil</button>
+                <button
+                    onClick={() => navigate("/ng/start")}
+                    className="w-1/3 h-14 bg-gradient-to-b from-zinc-300 via-zinc-400 to-neutral-400 text-white text-lg font-medium"
+                >
+                    Startseite
+                </button>
+                <button
+                    onClick={() => navigate("/ng/anfragen")}
+                    className="w-1/3 h-14 bg-gradient-to-b from-zinc-300 via-zinc-400 to-neutral-400 text-white text-lg font-medium"
+                >
+                    Anfragen
+                </button>
             </div>
         </div>
     );
