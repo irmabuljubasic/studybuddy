@@ -12,6 +12,10 @@ const NGProfil = () => {
         user?.faecher?.map((fach) => ({ value: fach, label: fach })) || []
     );
 
+    const [editBemerkung, setEditBemerkung] = useState(false);
+    const [bemerkung, setBemerkung] = useState(user?.bemerkung || "");
+
+
     //Fächer bearbeitung speichern
     const saveSubjects = async () => {
         const updated = {
@@ -46,6 +50,44 @@ const NGProfil = () => {
             alert("Ein Fehler ist aufgetreten.");
         }
     };
+
+    //Bemerkung bearbeiten
+    const saveBemerkung = async () => {
+        const updated = {
+            ...user,
+            bemerkung: bemerkung,
+        };
+
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/update/" + user.email, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    vorname: updated.vorname,
+                    nachname: updated.nachname,
+                    email: updated.email,
+                    faecher: updated.faecher,
+                    bemerkung: updated.bemerkung,
+                }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem("user", JSON.stringify(data.user));
+                setUser(data.user);
+                setBemerkung(data.user.bemerkung || "");
+                setEditBemerkung(false);
+            } else {
+                alert("Fehler beim Speichern: " + data.message);
+            }
+        } catch (error) {
+            console.error("Fehler beim Aktualisieren:", error);
+            alert("Ein Fehler ist aufgetreten.");
+        }
+    };
+
 
 
     const subjects = [
@@ -97,17 +139,38 @@ const NGProfil = () => {
                 )}
             </div>
 
-            <div className="mt-8 w-72">
-                <label className="text-base font-medium">Bemerkung</label>
-                <textarea
-                    className="w-full mt-2 h-24 bg-zinc-300 p-2 rounded text-black"
-                    placeholder="Kommentar hier..."
-                ></textarea>
-                <div className="flex justify-between text-xs mt-1">
-                    <span>bearbeiten</span>
-                    <span>speichern</span>
-                </div>
+            {/* Bemerkung */}
+            <div className="w-80 mt-6">
+                <label className="block font-semibold text-black mb-1">Bemerkung</label>
+                {editBemerkung ? (
+                    <>
+                        <textarea
+                            value={bemerkung}
+                            onChange={(e) => setBemerkung(e.target.value)}
+                            className="w-full h-24 bg-zinc-300 rounded px-2 py-1 text-black"
+                        ></textarea>
+                        <div
+                            onClick={saveBemerkung}
+                            className="text-right text-sm mt-1 text-blue-600 cursor-pointer"
+                        >
+                            speichern
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className="w-full bg-zinc-300 p-2 rounded text-black min-h-[3rem] whitespace-pre-wrap">
+                            {bemerkung || "Keine Bemerkung vorhanden"}
+                        </div>
+                        <div
+                            onClick={() => setEditBemerkung(true)}
+                            className="text-right text-sm mt-1 text-blue-600 cursor-pointer"
+                        >
+                            bearbeiten
+                        </div>
+                    </>
+                )}
             </div>
+
 
             <div className="fixed bottom-0 left-0 w-full flex">
                 <button className="w-1/3 h-14 bg-pink text-white text-lg font-medium">Profil</button>
