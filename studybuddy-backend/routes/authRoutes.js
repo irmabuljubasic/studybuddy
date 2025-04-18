@@ -5,8 +5,11 @@ const router = express.Router();
 
 // Registrierung
 router.post("/register", async (req, res) => {
+    console.log("Request body:", req.body); 
+
   try {
-    const { vorname, nachname, email, passwort, faecher } = req.body;
+    console.log("📩 Eingehende Daten:", req.body);
+    const { vorname, nachname, email, passwort, faecher, rolle } = req.body;
 
     const newUser = new User({
       vorname,
@@ -14,6 +17,7 @@ router.post("/register", async (req, res) => {
       email,
       passwort,
       faecher,
+      rolle,
     });
 
     await newUser.save();
@@ -23,6 +27,23 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ error: "Fehler bei der Registrierung" });
   }
 });
+
+ // Anmeldung
+router.post("/login", async (req, res) => {
+  const { email, passwort } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "Benutzer nicht gefunden" });
+
+    if (user.passwort !== passwort) return res.status(401).json({ message: "Falsches Passwort" });
+
+    res.status(200).json({ message: "Login erfolgreich", user });
+  } catch (err) {
+    res.status(500).json({ error: "Login fehlgeschlagen", details: err.message });
+  }
+});
+
 
 // Profil aktualisieren
 router.put("/update/:email", async (req, res) => {

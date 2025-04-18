@@ -7,20 +7,38 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [passwort, setPasswort] = useState("");
 
-    const handleLogin = () => {
-        const rolle = localStorage.getItem("rolle"); // "ng" oder "nn"
+    const handleLogin = async () => {
+        try {
+            const res = await fetch("http://localhost:5000/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, passwort }),
+            });
 
-        // Hier später: API-Call machen
+            const data = await res.json();
 
-        // Weiterleitung je nach Rolle NG und NN
-        if (rolle === "ng") {
-            navigate("/ng/profil");
-        } else if (rolle === "nn") {
-            navigate("/nn/profil");
-        } else {
-            navigate("/"); // fallback
+            if (res.ok) {
+                // Speichern in localStorage
+                localStorage.setItem("user", JSON.stringify(data.user));
+                localStorage.setItem("rolle", data.user.rolle);
+
+                // Weiterleitung je nach Rolle
+                if (data.user.rolle === "ng") {
+                    navigate("/ng/profil");
+                } else if (data.user.rolle === "nn") {
+                    navigate("/nn/profil");
+                } else {
+                    navigate("/");
+                }
+            } else {
+                alert(data.message || "Login fehlgeschlagen");
+            }
+        } catch (err) {
+            console.error("Login Fehler:", err);
+            alert("Serverfehler beim Login");
         }
     };
+
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-4">

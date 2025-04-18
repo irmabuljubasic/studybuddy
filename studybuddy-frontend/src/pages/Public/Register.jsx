@@ -21,8 +21,23 @@ const Register = () => {
     const handleRegister = async () => {
         const rolle = localStorage.getItem("rolle");
 
+        // Validierung
+        if (!vorname || !nachname || !email || !passwort) {
+            alert("Bitte alle Felder ausfüllen!");
+            return;
+        }
+
+        if (selectedSubjects.length === 0) {
+            alert("Bitte mindestens ein Fach auswählen!");
+            return;
+        }
+        console.log("Fächer vor dem Absenden:", selectedSubjects.map((s) => s.value));
+
+
+        const faecher = selectedSubjects.map((s) => s.value); // Korrektes Array
+
         try {
-            await fetch("http://localhost:5000/api/auth/register", {
+            const res = await fetch("http://localhost:5000/api/auth/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -32,19 +47,26 @@ const Register = () => {
                     nachname,
                     email,
                     passwort,
-                    faecher: selectedSubjects.map((s) => s.value),
+                    faecher,
+                    rolle,
                 }),
             });
 
-            //speichern in localStorage
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data?.error || "Fehler bei der Registrierung");
+            }
+
+            // Speichern im localStorage
             localStorage.setItem("user", JSON.stringify({
                 vorname,
                 nachname,
                 email,
-                faecher: selectedSubjects.map((s) => s.value),
+                faecher,
+                rolle,
             }));
 
-            //Navigation
+            // Weiterleitung je nach Rolle
             if (rolle === "ng") {
                 navigate("/ng/profil");
             } else if (rolle === "nn") {
@@ -54,10 +76,9 @@ const Register = () => {
             }
         } catch (error) {
             console.error("Fehler beim Registrieren:", error);
+            alert(error.message);
         }
     };
-
-
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
@@ -95,7 +116,6 @@ const Register = () => {
                     className="w-full h-12 px-3 rounded bg-zinc-300 placeholder-stone-500"
                 />
 
-                {/* Fach Dropdown */}
                 <div className="w-full text-left">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Fach (mehrere möglich)

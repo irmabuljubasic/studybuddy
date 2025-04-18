@@ -28,12 +28,20 @@ const NNProfil = () => {
     ].map((fach) => ({ value: fach, label: fach }));
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-between bg-white px-4 pt-8 pb-20">
-            <div className="flex flex-col items-center">
-                <h1 className="text-xl font-bold mb-4">Profil</h1>
-                <p><strong>Vorname:</strong> {user?.vorname}</p>
-                <p><strong>Nachname:</strong> {user?.nachname}</p>
-                <p><strong>Email:</strong> {user?.email}</p>
+        <div className="w-full min-h-screen bg-white flex flex-col items-center pb-20">
+                    <img src={logo} alt="StudyBuddy Logo" className="w-48 mt-8" />
+        
+                    <div className="w-80 bg-gray-200 rounded p-3 flex items-center gap-4 shadow-md mt-4">
+                        <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-xs">
+                            Foto
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-black font-bold leading-none">{user?.vorname}</span>
+                            <span className="text-black font-bold leading-none">{user?.nachname}</span>
+                            <span className="text-black text-sm leading-none">{user?.email}</span>
+                        </div>
+                        <button className="ml-auto bg-pink text-white text-sm px-2 py-1 rounded">löschen</button>
+                    
 
                 {/* Fächer bearbeiten */}
                 <div className="w-80 mt-4">
