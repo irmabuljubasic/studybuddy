@@ -121,13 +121,21 @@ router.get("/ng/:id", async (req, res) => {
     }
 });
 
-//NN schickt Anfrage an NG
+// NN schickt Anfrage an NG (nur eine pro NG erlaubt)
 router.post("/anfrage", async (req, res) => {
   const { vonId, anId } = req.body;
 
   try {
+    // Prüfen, ob Anfrage bereits existiert
+    const existiert = await Anfrage.findOne({ von: vonId, an: anId });
+    if (existiert) {
+      return res.status(400).json({ message: "Du hast dieser Person bereits eine Anfrage geschickt." });
+    }
+
+    // Neue Anfrage erstellen
     const neueAnfrage = new Anfrage({ von: vonId, an: anId });
     await neueAnfrage.save();
+
     res.status(201).json({ message: "Anfrage gesendet!" });
   } catch (err) {
     console.error("Fehler beim Senden der Anfrage:", err);
@@ -139,7 +147,7 @@ router.post("/anfrage", async (req, res) => {
 router.get("/anfragen/:ngId", async (req, res) => {
   try {
     const anfragen = await Anfrage.find({ an: req.params.ngId })
-      .populate("von", "vorname nachname bemerkung")
+      .populate("von", "vorname nachname bemerkung faecher")
       .sort({ erstelltAm: -1 });
 
     res.status(200).json(anfragen);

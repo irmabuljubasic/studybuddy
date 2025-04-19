@@ -23,15 +23,12 @@ const NGAnfragen = () => {
 
     return (
         <div className="min-h-screen bg-white p-4 relative">
-            <h2 className="text-xl font-bold mb-4">Anfragen</h2>
+            <h2 className="text-xl font-bold mb-4">Bitte beantworte folgende Anfragen:</h2>
 
             {/* Detailansicht */}
             {selected ? (
                 <div className="w-full mt-6 bg-zinc-300 rounded-lg p-4 relative">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-xl">
-                            🧑‍🎓
-                        </div>
                         <div>
                             <p className="font-bold">{selected.vorname} {selected.nachname}</p>
                         </div>
@@ -42,10 +39,14 @@ const NGAnfragen = () => {
                             x
                         </button>
                     </div>
+                    <p className="text-sm font-semibold">Fächer:</p>
+                    <p className="text-sm mb-2">{selected.faecher?.join(", ") || "Keine Angabe"}</p>
+
                     <p className="text-sm font-semibold">Bemerkung:</p>
                     <p className="text-sm">{selected.bemerkung || "Keine Bemerkung"}</p>
                 </div>
             ) : (
+                // Listenansicht – nur Name + Icon
                 anfragen.map((a) => (
                     <div
                         key={a._id}
@@ -54,7 +55,6 @@ const NGAnfragen = () => {
                     >
                         <div>
                             <p className="font-bold">{a.von.vorname} {a.von.nachname}</p>
-                            <p className="text-sm">{a.von.bemerkung || "Keine Bemerkung"}</p>
                         </div>
                         <span className="text-2xl">✉️</span>
                     </div>
