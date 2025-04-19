@@ -21,6 +21,28 @@ const NGAnfragen = () => {
         fetchAnfragen();
     }, [ng._id]);
 
+    const handleAntwort = async (anfrageId, status) => {
+        try {
+            const res = await fetch(`http://localhost:5000/api/auth/anfrage/${anfrageId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status }),
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                setAnfragen((prev) => prev.filter((a) => a._id !== anfrageId));
+                setSelected(null);
+                alert(`Anfrage wurde ${status === "angenommen" ? "angenommen ✅" : "abgelehnt ❌"}`);
+            } else {
+                alert("Fehler: " + data.message);
+            }
+        } catch (err) {
+            console.error("Antwort-Fehler:", err);
+            alert("Etwas ist schiefgelaufen.");
+        }
+    };
+
     return (
         <div className="min-h-screen bg-white p-4 relative">
             <h2 className="text-xl font-bold mb-4">Bitte beantworte folgende Anfragen:</h2>
@@ -39,11 +61,27 @@ const NGAnfragen = () => {
                             x
                         </button>
                     </div>
+
                     <p className="text-sm font-semibold">Fächer:</p>
                     <p className="text-sm mb-2">{selected.faecher?.join(", ") || "Keine Angabe"}</p>
 
                     <p className="text-sm font-semibold">Bemerkung:</p>
-                    <p className="text-sm">{selected.bemerkung || "Keine Bemerkung"}</p>
+                    <p className="text-sm mb-4">{selected.bemerkung || "Keine Bemerkung"}</p>
+
+                    <div className="flex justify-center gap-4">
+                        <button
+                            onClick={() => handleAntwort(selected.anfrageId, "angenommen")}
+                            className="bg-pink text-white px-4 py-2 rounded-full font-bold"
+                        >
+                            ✅ Annehmen
+                        </button>
+                        <button
+                            onClick={() => handleAntwort(selected.anfrageId, "abgelehnt")}
+                            className="bg-gray-500 text-white px-4 py-2 rounded-full font-bold"
+                        >
+                            ❌ Ablehnen
+                        </button>
+                    </div>
                 </div>
             ) : (
                 // Listenansicht – nur Name + Icon
@@ -51,7 +89,7 @@ const NGAnfragen = () => {
                     <div
                         key={a._id}
                         className="bg-gray-200 p-4 mb-2 rounded flex justify-between items-center cursor-pointer"
-                        onClick={() => setSelected(a.von)}
+                        onClick={() => setSelected({ ...a.von, anfrageId: a._id })}
                     >
                         <div>
                             <p className="font-bold">{a.von.vorname} {a.von.nachname}</p>

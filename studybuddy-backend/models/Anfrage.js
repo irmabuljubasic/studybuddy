@@ -11,6 +11,11 @@ const anfrageSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["ausstehend", "angenommen", "abgelehnt"],
+    default: "ausstehend", 
+  },
   erstelltAm: {
     type: Date,
     default: Date.now,

@@ -1,68 +1,104 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const NNAnfragen = () => {
     const navigate = useNavigate();
-    const [tab, setTab] = useState("angenommen");
+    const [tab, setTab] = useState("ausstehend");
+    const [anfragen, setAnfragen] = useState([]);
+    const user = JSON.parse(localStorage.getItem("user"));
 
-    const renderMessage = () => {
-        switch (tab) {
-            case "angenommen":
-                return (
-                    <p className="text-center text-lg font-medium mt-8 px-4">
-                        Sie wurden angenommen und<br />
-                        haben nun die Möglichkeit sie<br />
-                        per Email zu kontaktieren!!
-                    </p>
-                );
-            case "ausstehend":
-                return (
-                    <p className="text-center text-lg font-medium mt-8 px-4">
-                        Ihre Anfrage wurde noch<br />
-                        nicht beantwortet
-                    </p>
-                );
-            case "abgelehnt":
-                return (
-                    <p className="text-center text-lg font-medium mt-8 px-4">
-                        Sie wurden leider von folgenden<br />
-                        Nachhilfe gebenden abgelehnt:
-                    </p>
-                );
-            default:
-                return null;
-        }
-    };
+    useEffect(() => {
+        const fetchAnfragen = async () => {
+            try {
+                const res = await fetch(`http://localhost:5000/api/auth/anfragen-von/${user._id}`);
+                const data = await res.json();
+                setAnfragen(data);
+            } catch (err) {
+                console.error("Fehler beim Laden der Anfragen:", err);
+            }
+        };
+
+        fetchAnfragen();
+    }, [user._id]);
+
+    const filtered = anfragen.filter((a) => a.status === tab);
 
     return (
         <div className="min-h-screen bg-white pb-20 pt-6 flex flex-col items-center">
             {/* Tabs */}
             <div className="flex space-x-2 mb-4">
-                <button
-                    className={`px-4 py-1 border ${tab === "angenommen" ? "bg-zinc-400" : "bg-zinc-300"
-                        }`}
-                    onClick={() => setTab("angenommen")}
-                >
-                    angenommen
-                </button>
-                <button
-                    className={`px-4 py-1 border ${tab === "ausstehend" ? "bg-zinc-400" : "bg-zinc-300"
-                        }`}
-                    onClick={() => setTab("ausstehend")}
-                >
-                    ausstehend
-                </button>
-                <button
-                    className={`px-4 py-1 border ${tab === "abgelehnt" ? "bg-zinc-400" : "bg-zinc-300"
-                        }`}
-                    onClick={() => setTab("abgelehnt")}
-                >
-                    abgelehnt
-                </button>
+                {["angenommen", "ausstehend", "abgelehnt"].map((status) => (
+                    <button
+                        key={status}
+                        className={`px-4 py-1 border rounded ${tab === status ? "bg-zinc-400" : "bg-zinc-300"}`}
+                        onClick={() => setTab(status)}
+                    >
+                        {status}
+                    </button>
+                ))}
             </div>
 
-            {/* Info Text */}
-            {renderMessage()}
+            {/* Ergebnisliste */}
+            <div className="w-full max-w-md mt-4 space-y-3 px-4">
+                {filtered.length === 0 ? (
+                    <p className="text-center text-gray-500 text-sm mt-2">Keine Anfragen vorhanden</p>
+                ) : (
+                    filtered.map((a) => (
+                        <div key={a._id} className="bg-zinc-200 rounded p-4">
+                            <p className="font-bold">{a.an.vorname} {a.an.nachname}</p>
+
+                            {/* Angenommen */}
+                            {tab === "angenommen" && (
+                                <>
+                                    <p className="text-sm mt-2">
+                                        ✅ Du wurdest von <strong>{a.an.vorname} {a.an.nachname}</strong> angenommen –<br />
+                                        klicke hier, um per E-Mail Kontakt aufzunehmen:
+                                    </p>
+                                    <a
+                                        href={`mailto:${a.an.email}`}
+                                        className="text-blue-600 underline text-sm mt-1 inline-block break-all"
+                                    >
+                                        {a.an.email}
+                                    </a>
+                                </>
+                            )}
+
+                            {/* Ausstehend */}
+                            {tab === "ausstehend" && (
+                                <p className="text-sm text-gray-700 mt-1">
+                                    Deine Anfrage wurde noch nicht beantwortet.
+                                </p>
+                            )}
+
+                            {/* Abgelehnt mit ❌ Button */}
+                            {tab === "abgelehnt" && (
+                                <div className="flex justify-between items-start mt-2">
+                                    <p className="text-sm text-red-600 w-full">
+                                        ❌ Du wurdest leider von <strong>{a.an.vorname} {a.an.nachname}</strong> abgelehnt.
+                                    </p>
+                                    <button
+                                        onClick={async () => {
+                                            try {
+                                                await fetch(`http://localhost:5000/api/auth/anfrage/${a._id}`, {
+                                                    method: "DELETE",
+                                                });
+                                                setAnfragen(prev => prev.filter(item => item._id !== a._id));
+                                            } catch (err) {
+                                                console.error("Fehler beim Löschen:", err);
+                                                alert("Löschen fehlgeschlagen");
+                                            }
+                                        }}
+                                        className="ml-3 text-white bg-red-500 hover:bg-red-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold"
+                                        title="Anfrage entfernen"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ))
+                )}
+            </div>
 
             {/* Bottom Navigation */}
             <div className="fixed bottom-0 left-0 w-full flex">

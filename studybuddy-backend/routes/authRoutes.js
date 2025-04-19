@@ -6,21 +6,12 @@ const router = express.Router();
 
 // Registrierung
 router.post("/register", async (req, res) => {
-    console.log("Request body:", req.body); 
-
   try {
     const { vorname, nachname, email, passwort, faecher, rolle } = req.body;
 
-    const newUser = new User({
-      vorname,
-      nachname,
-      email,
-      passwort,
-      rolle,
-      faecher,
-    });
-
+    const newUser = new User({ vorname, nachname, email, passwort, rolle, faecher });
     await newUser.save();
+
     res.status(201).json({ message: "Benutzer erfolgreich registriert!" });
   } catch (err) {
     console.error(err);
@@ -28,14 +19,13 @@ router.post("/register", async (req, res) => {
   }
 });
 
- // Anmeldung
+// Anmeldung
 router.post("/login", async (req, res) => {
   const { email, passwort } = req.body;
 
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "Benutzer nicht gefunden" });
-
     if (user.passwort !== passwort) return res.status(401).json({ message: "Falsches Passwort" });
 
     res.status(200).json({ message: "Login erfolgreich", user });
@@ -44,7 +34,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
 // Profil aktualisieren
 router.put("/update/:email", async (req, res) => {
   const { email } = req.params;
@@ -52,9 +41,7 @@ router.put("/update/:email", async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "Benutzer nicht gefunden" });
-    }
+    if (!user) return res.status(404).json({ message: "Benutzer nicht gefunden" });
 
     user.vorname = vorname ?? user.vorname;
     user.nachname = nachname ?? user.nachname;
@@ -70,32 +57,30 @@ router.put("/update/:email", async (req, res) => {
   }
 });
 
-
 // Benutzer löschen
 router.delete("/delete/:email", async (req, res) => {
-    const { email } = req.params;
+  const { email } = req.params;
 
-    try {
-        const result = await User.deleteOne({ email });
-        if (result.deletedCount === 0) {
-            return res.status(404).json({ message: "Benutzer nicht gefunden" });
-        }
-        res.status(200).json({ message: "Benutzer erfolgreich gelöscht" });
-    } catch (err) {
-        console.error("Fehler beim Löschen:", err);
-        res.status(500).json({ message: "Fehler beim Löschen", error: err.message });
-    }
+  try {
+    const result = await User.deleteOne({ email });
+    if (result.deletedCount === 0) return res.status(404).json({ message: "Benutzer nicht gefunden" });
+
+    res.status(200).json({ message: "Benutzer erfolgreich gelöscht" });
+  } catch (err) {
+    console.error("Fehler beim Löschen:", err);
+    res.status(500).json({ message: "Fehler beim Löschen", error: err.message });
+  }
 });
 
 // NGs nach Fach filtern
 router.post("/ngs", async (req, res) => {
-  const { faecher } = req.body; // wichtig: KEIN Umlaut "ä"
+  const { faecher } = req.body;
 
   try {
     const nachhilfeGeber = await User.find({
       rolle: "ng",
       faecher: { $in: faecher },
-    }).select("-passwort -email"); // schütze sensible Daten
+    }).select("-passwort -email");
 
     res.status(200).json(nachhilfeGeber);
   } catch (err) {
@@ -106,19 +91,17 @@ router.post("/ngs", async (req, res) => {
 
 // Einzelnes NG-Profil abrufen
 router.get("/ng/:id", async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const user = await User.findById(id).select("-passwort -email");
-        if (!user || user.rolle !== "ng") {
-            return res.status(404).json({ message: "Nachhilfegeber nicht gefunden" });
-        }
-
-        res.status(200).json(user);
-    } catch (err) {
-        console.error("Fehler beim Laden des NG-Profils:", err);
-        res.status(500).json({ message: "Fehler beim Laden des Profils" });
+  try {
+    const user = await User.findById(req.params.id).select("-passwort -email");
+    if (!user || user.rolle !== "ng") {
+      return res.status(404).json({ message: "Nachhilfegeber nicht gefunden" });
     }
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error("Fehler beim Laden des NG-Profils:", err);
+    res.status(500).json({ message: "Fehler beim Laden des Profils" });
+  }
 });
 
 // NN schickt Anfrage an NG (nur eine pro NG erlaubt)
@@ -126,14 +109,12 @@ router.post("/anfrage", async (req, res) => {
   const { vonId, anId } = req.body;
 
   try {
-    // Prüfen, ob Anfrage bereits existiert
     const existiert = await Anfrage.findOne({ von: vonId, an: anId });
     if (existiert) {
       return res.status(400).json({ message: "Du hast dieser Person bereits eine Anfrage geschickt." });
     }
 
-    // Neue Anfrage erstellen
-    const neueAnfrage = new Anfrage({ von: vonId, an: anId });
+    const neueAnfrage = new Anfrage({ von: vonId, an: anId, status: "ausstehend" });
     await neueAnfrage.save();
 
     res.status(201).json({ message: "Anfrage gesendet!" });
@@ -143,7 +124,7 @@ router.post("/anfrage", async (req, res) => {
   }
 });
 
-//NG erhaltet Anfrage von NN
+// NG erhaltet Anfrage von NN
 router.get("/anfragen/:ngId", async (req, res) => {
   try {
     const anfragen = await Anfrage.find({ an: req.params.ngId })
@@ -157,5 +138,55 @@ router.get("/anfragen/:ngId", async (req, res) => {
   }
 });
 
+// NG beantwortet eine Anfrage
+router.put("/anfrage/:id", async (req, res) => {
+  const { status } = req.body;
+
+  try {
+    const anfrage = await Anfrage.findById(req.params.id).populate("von", "email");
+    if (!anfrage) return res.status(404).json({ message: "Anfrage nicht gefunden" });
+
+    anfrage.status = status;
+    await anfrage.save();
+
+    const email = status === "angenommen" ? anfrage.an.email : null;
+
+    res.status(200).json({
+      message: `Anfrage wurde ${status}`,
+      ...(email && { email }),
+    });
+  } catch (err) {
+    console.error("Fehler beim Beantworten:", err);
+    res.status(500).json({ message: "Fehler beim Aktualisieren" });
+  }
+});
+
+// NN sieht seine gesendeten Anfragen + Status
+router.get("/anfragen-von/:nnId", async (req, res) => {
+  try {
+    const anfragen = await Anfrage.find({ von: req.params.nnId })
+      .populate("an", "vorname nachname email")
+      .sort({ erstelltAm: -1 });
+
+    res.status(200).json(anfragen);
+  } catch (err) {
+    console.error("Fehler beim Abrufen der Anfragen vom NN:", err);
+    res.status(500).json({ message: "Fehler beim Laden der Anfragen" });
+  }
+});
+
+// Anfrage löschen (z.B. wenn abgelehnt)
+router.delete("/anfrage/:id", async (req, res) => {
+  try {
+    const result = await Anfrage.findByIdAndDelete(req.params.id);
+    if (!result) {
+      return res.status(404).json({ message: "Anfrage nicht gefunden" });
+    }
+    res.status(200).json({ message: "Anfrage gelöscht" });
+  } catch (err) {
+    console.error("Fehler beim Löschen der Anfrage:", err);
+    res.status(500).json({ message: "Fehler beim Löschen" });
+  }
+});
 
 export default router;
