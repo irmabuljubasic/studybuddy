@@ -87,4 +87,38 @@ router.delete("/delete/:email", async (req, res) => {
     }
 });
 
+// NGs nach Fach filtern
+router.post("/ngs", async (req, res) => {
+  const { faecher } = req.body; // wichtig: KEIN Umlaut "ä"
+
+  try {
+    const nachhilfeGeber = await User.find({
+      rolle: "ng",
+      faecher: { $in: faecher },
+    }).select("-passwort -email"); // schütze sensible Daten
+
+    res.status(200).json(nachhilfeGeber);
+  } catch (err) {
+    console.error("Fehler bei der NG-Suche:", err);
+    res.status(500).json({ message: "Serverfehler bei NG-Suche" });
+  }
+});
+
+// Einzelnes NG-Profil abrufen
+router.get("/ng/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await User.findById(id).select("-passwort -email");
+        if (!user || user.rolle !== "ng") {
+            return res.status(404).json({ message: "Nachhilfegeber nicht gefunden" });
+        }
+
+        res.status(200).json(user);
+    } catch (err) {
+        console.error("Fehler beim Laden des NG-Profils:", err);
+        res.status(500).json({ message: "Fehler beim Laden des Profils" });
+    }
+});
+
 export default router;

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import logo from "../../assets/studybuddy-logo.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const fächerOptions = [
     { value: "Mathe", label: "Mathe" },
@@ -30,6 +30,42 @@ const NNStartseite = () => {
     const navigate = useNavigate();
     const [selectedSubjects, setSelectedSubjects] = useState([]);
 
+    const [results, setResults] = useState([]);
+
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.state?.faecher) {
+            setSelectedSubjects(location.state.faecher);
+        }
+        if (location.state?.results) {
+            setResults(location.state.results);
+        }
+    }, []);
+
+    const handleSearch = async () => {
+        const faecher = selectedSubjects.map((s) => s.value);
+
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/ngs", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ faecher }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setResults(data);
+            } else {
+                alert("Fehler bei der Suche: " + data.message);
+            }
+        } catch (error) {
+            console.error("Fehler beim Suchen:", error);
+            alert("Etwas ist schiefgelaufen.");
+        }
+    };
+
+
     return (
         <div className="min-h-screen bg-white px-4 py-6 flex flex-col items-center gap-6">
             {/* Logo */}
@@ -37,7 +73,7 @@ const NNStartseite = () => {
 
             {/* Dropdown Suche */}
             <div className="w-72 text-left">
-            
+
                 <Select
                     isMulti
                     name="fächer"
@@ -47,9 +83,47 @@ const NNStartseite = () => {
                     className="text-black"
                     placeholder="Suche..."
                 />
+
+                <button
+                    onClick={handleSearch}
+                    className="mt-4 bg-pink text-white px-4 py-2 rounded shadow"
+                >
+                    Nachhilfegeber finden
+                </button>
+
             </div>
 
-            {/* (Später: Gefilterte Nachhilfegeber hier anzeigen) */}
+            {results.length > 0 && (
+                <div className="w-full mt-4 flex flex-col items-center gap-4">
+                    {results.map((ng) => (
+                        <div key={ng._id} className="w-72 bg-gray-200 rounded p-4 shadow flex justify-between items-center">
+                            <div>
+                                <div className="font-bold text-black">{ng.vorname} {ng.nachname}</div>
+                                <div className="text-sm text-black">{ng.faecher.join(", ")}</div>
+                            </div>
+                            <button
+                                className="bg-pink text-white px-4 py-1 rounded"
+                                onClick={() =>
+                                    navigate(`/nn/ng/${ng._id}`, {
+                                        state: {
+                                            previousSearch: {
+                                                faecher: selectedSubjects,
+                                                results: results
+                                            }
+                                        }
+                                    })
+                                }
+
+                            >
+                                ansehen
+                            </button>
+
+
+                        </div>
+                    ))}
+                </div>
+            )}
+
 
             {/* Bottom Nav */}
             <div className="w-full fixed bottom-0 left-0 flex">

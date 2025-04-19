@@ -7,7 +7,6 @@ const dummyAnfragen = [
         name: "Lea Müller",
         fach: "Mathe",
         bemerkung: "Ich brauche Hilfe bei Funktionen.",
-        foto: "🧑‍🎓",
     },
     {
         id: 2,

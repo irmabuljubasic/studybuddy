@@ -15,6 +15,7 @@ import NGProfil from "./pages/NG/Profil";
 import NNStartseite from "./pages/NN/Startseite";
 import NNAnfragen from "./pages/NN/Anfragen";
 import NNProfil from "./pages/NN/Profil";
+import NGProfilDetails from "./pages/NN/NGProfilDetails";
 
 // Admin
 import AdminDashboard from "./pages/Admin/AdminDashboard";
@@ -38,6 +39,7 @@ function App() {
         <Route path="/nn/start" element={<NNStartseite />} />
         <Route path="/nn/anfragen" element={<NNAnfragen />} />
         <Route path="/nn/profil" element={<NNProfil />} />
+        <Route path="/nn/ng/:id" element={<NGProfilDetails />} />
 
         {/* Admin */}
         <Route path="/admin" element={<AdminDashboard />} />
