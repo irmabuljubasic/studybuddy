@@ -1,84 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const dummyAnfragen = [
-    {
-        id: 1,
-        name: "Lea Müller",
-        fach: "Mathe",
-        bemerkung: "Ich brauche Hilfe bei Funktionen.",
-    },
-    {
-        id: 2,
-        name: "Tom Bauer",
-        fach: "Infi",
-        bemerkung: "Verstehe Klassen nicht ganz.",
-        foto: "👨‍💻",
-    },
-    {
-        id: 3,
-        name: "Lena Schmidt",
-        fach: "Deutsch",
-        bemerkung: "Texterörterung üben",
-        foto: "📚",
-    },
-];
 
 const NGAnfragen = () => {
     const navigate = useNavigate();
     const [selected, setSelected] = useState(null);
+    const [anfragen, setAnfragen] = useState([]);
+    const ng = JSON.parse(localStorage.getItem("user"));
+
+    useEffect(() => {
+        const fetchAnfragen = async () => {
+            try {
+                const res = await fetch(`http://localhost:5000/api/auth/anfragen/${ng._id}`);
+                const data = await res.json();
+                setAnfragen(data);
+            } catch (err) {
+                console.error("Fehler beim Laden:", err);
+            }
+        };
+
+        fetchAnfragen();
+    }, [ng._id]);
 
     return (
         <div className="min-h-screen bg-white p-4 relative">
+            <h2 className="text-xl font-bold mb-4">Anfragen</h2>
+
             {/* Detailansicht */}
             {selected ? (
                 <div className="w-full mt-6 bg-zinc-300 rounded-lg p-4 relative">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-xl">
-                            {selected.foto}
+                            🧑‍🎓
                         </div>
                         <div>
-                            <p className="font-bold">{selected.name}</p>
-                            <p className="text-sm">Fach: {selected.fach}</p>
+                            <p className="font-bold">{selected.vorname} {selected.nachname}</p>
                         </div>
                         <button
                             onClick={() => setSelected(null)}
-                            className="ml-auto text-sm bg-zinc-300 rounded-full w-6 h-6 text-black"
+                            className="ml-auto text-sm bg-zinc-400 rounded-full w-6 h-6 text-white font-bold"
                         >
                             x
                         </button>
                     </div>
                     <p className="text-sm font-semibold">Bemerkung:</p>
-                    <p className="text-sm">{selected.bemerkung}</p>
+                    <p className="text-sm">{selected.bemerkung || "Keine Bemerkung"}</p>
                 </div>
             ) : (
-                <div className="mt-6 space-y-4">
-                    {dummyAnfragen.map((anfrage) => (
-                        <div
-                            key={anfrage.id}
-                            onClick={() => setSelected(anfrage)}
-                            className="bg-neutral-200 p-4 rounded-lg flex items-center justify-between cursor-pointer"
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-xl">
-                                    {anfrage.foto}
-                                </div>
-                                <div>
-                                    <p className="font-bold">{anfrage.name}</p>
-                                    <p className="text-sm">{anfrage.fach}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-10 h-10 bg-pink rounded-full text-white flex items-center justify-center font-bold">
-                                    o
-                                </div>
-                                <div className="w-10 h-10 bg-neutral-500 rounded-full text-white flex items-center justify-center font-bold">
-                                    x
-                                </div>
-                            </div>
+                anfragen.map((a) => (
+                    <div
+                        key={a._id}
+                        className="bg-gray-200 p-4 mb-2 rounded flex justify-between items-center cursor-pointer"
+                        onClick={() => setSelected(a.von)}
+                    >
+                        <div>
+                            <p className="font-bold">{a.von.vorname} {a.von.nachname}</p>
+                            <p className="text-sm">{a.von.bemerkung || "Keine Bemerkung"}</p>
                         </div>
-                    ))}
-                </div>
+                        <span className="text-2xl">✉️</span>
+                    </div>
+                ))
             )}
 
             {/* Bottom Navigation */}

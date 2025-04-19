@@ -65,6 +65,27 @@ const NNStartseite = () => {
         }
     };
 
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+
+    const handleAnfrage = async (ngId) => {
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/anfrage", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ vonId: currentUser._id, anId: ngId }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert("Anfrage gesendet!");
+            } else {
+                alert("Fehler: " + data.message);
+            }
+        } catch (err) {
+            console.error("Anfrage fehlgeschlagen", err);
+            alert("Fehler beim Senden.");
+        }
+    };
 
     return (
         <div className="min-h-screen bg-white px-4 py-6 flex flex-col items-center gap-6">
@@ -117,6 +138,14 @@ const NNStartseite = () => {
                             >
                                 ansehen
                             </button>
+
+                            <button
+                                className="bg-pink text-white px-3 py-1 rounded-full mr-2"
+                                onClick={() => handleAnfrage(ng._id)}
+                            >
+                                📩
+                            </button>
+
 
 
                         </div>

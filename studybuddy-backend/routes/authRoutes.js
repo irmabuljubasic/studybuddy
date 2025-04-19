@@ -1,5 +1,6 @@
 import express from "express";
 import User from "../models/User.js";
+import Anfrage from "../models/Anfrage.js";
 
 const router = express.Router();
 
@@ -8,7 +9,6 @@ router.post("/register", async (req, res) => {
     console.log("Request body:", req.body); 
 
   try {
-    console.log("📩 Eingehende Daten:", req.body);
     const { vorname, nachname, email, passwort, faecher, rolle } = req.body;
 
     const newUser = new User({
@@ -120,5 +120,34 @@ router.get("/ng/:id", async (req, res) => {
         res.status(500).json({ message: "Fehler beim Laden des Profils" });
     }
 });
+
+//NN schickt Anfrage an NG
+router.post("/anfrage", async (req, res) => {
+  const { vonId, anId } = req.body;
+
+  try {
+    const neueAnfrage = new Anfrage({ von: vonId, an: anId });
+    await neueAnfrage.save();
+    res.status(201).json({ message: "Anfrage gesendet!" });
+  } catch (err) {
+    console.error("Fehler beim Senden der Anfrage:", err);
+    res.status(500).json({ message: "Fehler beim Senden" });
+  }
+});
+
+//NG erhaltet Anfrage von NN
+router.get("/anfragen/:ngId", async (req, res) => {
+  try {
+    const anfragen = await Anfrage.find({ an: req.params.ngId })
+      .populate("von", "vorname nachname bemerkung")
+      .sort({ erstelltAm: -1 });
+
+    res.status(200).json(anfragen);
+  } catch (err) {
+    console.error("Fehler beim Abrufen der Anfragen:", err);
+    res.status(500).json({ message: "Fehler beim Laden der Anfragen" });
+  }
+});
+
 
 export default router;
