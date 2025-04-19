@@ -15,6 +15,31 @@ const NGProfil = () => {
     const [editBemerkung, setEditBemerkung] = useState(false);
     const [bemerkung, setBemerkung] = useState(user?.bemerkung || "");
 
+    //Profil löschen
+    const handleDelete = async () => {
+        const confirm = window.confirm("Möchtest du dein Profil wirklich endgültig löschen?");
+        if (!confirm) return;
+
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/delete/" + user.email, {
+                method: "DELETE",
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.removeItem("user");
+                localStorage.removeItem("rolle");
+                alert("Profil gelöscht");
+                navigate("/"); // zurück zur StartCard
+            } else {
+                alert("Fehler beim Löschen: " + data.message);
+            }
+        } catch (error) {
+            console.error("Fehler beim Löschen:", error);
+            alert("Ein Fehler ist aufgetreten.");
+        }
+    };
+
 
     //Fächer bearbeitung speichern
     const saveSubjects = async () => {
@@ -102,13 +127,16 @@ const NGProfil = () => {
 
             {/* Profil Header */}
             <div className="w-80 bg-gray-200 rounded p-4 flex flex-col items-center shadow-md mt-4">
-            
+
                 <span className="text-black font-bold text-lg">{user?.vorname} {user?.nachname}</span>
                 <span className="text-black text-sm">{user?.email}</span>
             </div>
 
             {/* Löschen Button */}
-            <button className="mt-3 bg-pink text-white text-sm px-4 py-1 rounded shadow">
+            <button
+                className="mt-3 bg-pink text-white text-sm px-4 py-1 rounded shadow"
+                onClick={handleDelete}
+            >
                 löschen
             </button>
 
@@ -157,7 +185,7 @@ const NGProfil = () => {
                     />
                 ) : (
                     <div className="min-h-[3rem] text-black whitespace-pre-wrap">
-                        {bemerkung || "Keine Bemerkung vorhanden"}
+                        {bemerkung || "z.B.: Ich bin in der 5ten Schulstufe und bin gut in diesen Themengebieten...."}
                     </div>
                 )}
             </div>

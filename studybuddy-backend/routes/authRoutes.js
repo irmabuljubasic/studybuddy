@@ -70,4 +70,21 @@ router.put("/update/:email", async (req, res) => {
   }
 });
 
+
+// Benutzer löschen
+router.delete("/delete/:email", async (req, res) => {
+    const { email } = req.params;
+
+    try {
+        const result = await User.deleteOne({ email });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "Benutzer nicht gefunden" });
+        }
+        res.status(200).json({ message: "Benutzer erfolgreich gelöscht" });
+    } catch (err) {
+        console.error("Fehler beim Löschen:", err);
+        res.status(500).json({ message: "Fehler beim Löschen", error: err.message });
+    }
+});
+
 export default router;

@@ -14,6 +14,31 @@ const NNProfil = () => {
     const [editBemerkung, setEditBemerkung] = useState(false);
     const [bemerkung, setBemerkung] = useState(user?.bemerkung || "");
 
+    //Profil löschen
+    const handleDelete = async () => {
+        const confirm = window.confirm("Möchtest du dein Profil wirklich endgültig löschen?");
+        if (!confirm) return;
+
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/delete/" + user.email, {
+                method: "DELETE",
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.removeItem("user");
+                localStorage.removeItem("rolle");
+                alert("Profil gelöscht");
+                navigate("/"); // zurück zur StartCard
+            } else {
+                alert("Fehler beim Löschen: " + data.message);
+            }
+        } catch (error) {
+            console.error("Fehler beim Löschen:", error);
+            alert("Ein Fehler ist aufgetreten.");
+        }
+    };
+
 
     //Fächer bearbeiten
     const saveSubjects = async () => {
@@ -96,7 +121,7 @@ const NNProfil = () => {
         "Wsft", "Rsor", "Sein"
     ].map((fach) => ({ value: fach, label: fach }));
 
-    
+
     return (
         <div className="w-full min-h-screen bg-white flex flex-col items-center pb-20">
             <img src={logo} alt="StudyBuddy Logo" className="w-40 mt-8" />
@@ -109,9 +134,13 @@ const NNProfil = () => {
             </div>
 
             {/* Löschen Button */}
-            <button className="mt-3 bg-pink text-white text-sm px-4 py-1 rounded shadow">
+            <button
+                className="mt-3 bg-pink text-white text-sm px-4 py-1 rounded shadow"
+                onClick={handleDelete}
+            >
                 löschen
             </button>
+
 
             {/* Fächer Box */}
             <div className="w-80 bg-zinc-200 rounded p-4 mt-8">
@@ -158,7 +187,7 @@ const NNProfil = () => {
                     />
                 ) : (
                     <div className="min-h-[3rem] text-black whitespace-pre-wrap">
-                        {bemerkung || "Keine Bemerkung vorhanden"}
+                        {bemerkung || "z.B.: Ich bin in der 5ten Schulstufe und brauche Hilfe in..."}
                     </div>
                 )}
             </div>
@@ -167,13 +196,13 @@ const NNProfil = () => {
             <div className="fixed bottom-0 left-0 w-full flex">
                 <button className="w-1/3 h-14 bg-pink text-white text-lg font-medium">Profil</button>
                 <button
-                    onClick={() => navigate("/ng/start")}
+                    onClick={() => navigate("/nn/start")}
                     className="w-1/3 h-14 bg-gradient-to-b from-zinc-300 via-zinc-400 to-neutral-400 text-white text-lg font-medium"
                 >
                     Startseite
                 </button>
                 <button
-                    onClick={() => navigate("/ng/anfragen")}
+                    onClick={() => navigate("/nn/anfragen")}
                     className="w-1/3 h-14 bg-gradient-to-b from-zinc-300 via-zinc-400 to-neutral-400 text-white text-lg font-medium"
                 >
                     Anfragen
