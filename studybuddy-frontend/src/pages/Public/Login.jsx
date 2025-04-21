@@ -11,9 +11,12 @@ const Login = () => {
         try {
             const res = await fetch("http://localhost:5000/api/auth/login", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                credentials: "include", // WICHTIG damit Cookie gesetzt wird
                 body: JSON.stringify({ email, passwort }),
-            });
+              });
 
             const data = await res.json();
 

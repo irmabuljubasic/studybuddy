@@ -14,7 +14,23 @@ const NNProfil = () => {
     const [editBemerkung, setEditBemerkung] = useState(false);
     const [bemerkung, setBemerkung] = useState(user?.bemerkung || "");
 
-    //Profil löschen
+    // 🔐 Logout
+    const handleLogout = async () => {
+        try {
+            await fetch("http://localhost:5000/api/auth/logout", {
+                method: "POST",
+                credentials: "include",
+            });
+
+            localStorage.clear();
+            navigate("/login");
+        } catch (err) {
+            console.error("Logout Fehler:", err);
+            alert("Logout fehlgeschlagen.");
+        }
+    };
+
+    // Profil löschen
     const handleDelete = async () => {
         const confirm = window.confirm("Möchtest du dein Profil wirklich endgültig löschen?");
         if (!confirm) return;
@@ -29,7 +45,7 @@ const NNProfil = () => {
                 localStorage.removeItem("user");
                 localStorage.removeItem("rolle");
                 alert("Profil gelöscht");
-                navigate("/"); // zurück zur StartCard
+                navigate("/");
             } else {
                 alert("Fehler beim Löschen: " + data.message);
             }
@@ -39,8 +55,6 @@ const NNProfil = () => {
         }
     };
 
-
-    //Fächer bearbeiten
     const saveSubjects = async () => {
         const updated = {
             ...user,
@@ -75,8 +89,6 @@ const NNProfil = () => {
         }
     };
 
-
-    //Bemerkung bearbeiten
     const saveBemerkung = async () => {
         const updated = {
             ...user,
@@ -113,14 +125,11 @@ const NNProfil = () => {
         }
     };
 
-
-
     const subjects = [
         "Mathe", "Deutsch", "Englisch", "NW(Chemie, Physik)", "Ggp", "Infi", "Swp",
         "Ufw1", "Ufw2", "Bet", "Bdda", "Kobe", "Maa1", "Mela", "Mt", "Nwes", "Amec",
         "Wsft", "Rsor", "Sein"
     ].map((fach) => ({ value: fach, label: fach }));
-
 
     return (
         <div className="w-full min-h-screen bg-white flex flex-col items-center pb-20">
@@ -128,19 +137,26 @@ const NNProfil = () => {
 
             {/* Profil Header */}
             <div className="w-80 bg-gray-200 rounded p-4 flex flex-col items-center shadow-md mt-4">
-
                 <span className="text-black font-bold text-lg">{user?.vorname} {user?.nachname}</span>
                 <span className="text-black text-sm">{user?.email}</span>
             </div>
 
-            {/* Löschen Button */}
+            {/* 🔘 Logout & Löschen */}
+            <div className="flex gap-4 mt-3">
             <button
-                className="mt-3 bg-pink text-white text-sm px-4 py-1 rounded shadow"
-                onClick={handleDelete}
-            >
-                löschen
-            </button>
+                    onClick={handleLogout}
+                    className="bg-pink text-white text-sm px-4 py-1 rounded shadow-md hover:scale-105 transition"
+                >
+                    Logout
+                </button>
 
+                <button
+                    className="bg-pink text-white text-sm px-4 py-1 rounded shadow"
+                    onClick={handleDelete}
+                >
+                    Löschen
+                </button>
+            </div>
 
             {/* Fächer Box */}
             <div className="w-80 bg-zinc-200 rounded p-4 mt-8">
