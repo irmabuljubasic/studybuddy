@@ -9,12 +9,26 @@ router.post("/register", async (req, res) => {
   try {
     const { vorname, nachname, email, passwort, faecher, rolle } = req.body;
 
+    // Email-Pattern check
+    const emailPattern = /^[a-z]+\.[a-z]+\.student@htl-hallein\.at$/;
+    if (!emailPattern.test(email)) {
+      return res.status(400).json({ message: "Nur Schul-E-Mails erlaubt (vorname.nachname.student@htl-hallein.at)" });
+    }
+
+    // Passwort-Check
+    const pwPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!pwPattern.test(passwort)) {
+      return res.status(400).json({
+        message: "Passwort muss mind. 8 Zeichen lang sein & Groß-, Kleinbuchstaben, Zahlen & Sonderzeichen enthalten",
+      });
+    }
+
     const newUser = new User({ vorname, nachname, email, passwort, rolle, faecher });
     await newUser.save();
 
     res.status(201).json({ message: "Benutzer erfolgreich registriert!" });
   } catch (err) {
-    console.error(err);
+    console.error("Fehler bei der Registrierung:", err);
     res.status(500).json({ error: "Fehler bei der Registrierung" });
   }
 });
@@ -107,6 +121,11 @@ router.get("/ng/:id", async (req, res) => {
 // NN schickt Anfrage an NG (nur eine pro NG erlaubt)
 router.post("/anfrage", async (req, res) => {
   const { vonId, anId } = req.body;
+
+  // 🛡️ Sicherheitscheck: Sind IDs da?
+  if (!vonId || !anId) {
+    return res.status(400).json({ message: "Fehlende Nutzer-ID (vonId oder anId)!" });
+  }
 
   try {
     const existiert = await Anfrage.findOne({ von: vonId, an: anId });

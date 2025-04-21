@@ -68,6 +68,8 @@ const NNStartseite = () => {
     const currentUser = JSON.parse(localStorage.getItem("user"));
 
     const handleAnfrage = async (ngId) => {
+        console.log("vonId:", currentUser?._id);
+        console.log("anId:", ngId);
         try {
             const response = await fetch("http://localhost:5000/api/auth/anfrage", {
                 method: "POST",
