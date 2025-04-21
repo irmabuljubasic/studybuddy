@@ -1,4 +1,5 @@
 import express from "express";
+import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import Anfrage from "../models/Anfrage.js";
 
@@ -9,21 +10,35 @@ router.post("/register", async (req, res) => {
   try {
     const { vorname, nachname, email, passwort, faecher, rolle } = req.body;
 
-    // Email-Pattern check
+    // Schul-E-Mail überprüfen
     const emailPattern = /^[a-z]+\.[a-z]+\.student@htl-hallein\.at$/;
     if (!emailPattern.test(email)) {
-      return res.status(400).json({ message: "Nur Schul-E-Mails erlaubt (vorname.nachname.student@htl-hallein.at)" });
-    }
-
-    // Passwort-Check
-    const pwPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-    if (!pwPattern.test(passwort)) {
       return res.status(400).json({
-        message: "Passwort muss mind. 8 Zeichen lang sein & Groß-, Kleinbuchstaben, Zahlen & Sonderzeichen enthalten",
+        message: "Nur Schul-E-Mails erlaubt (vorname.nachname.student@htl-hallein.at)",
       });
     }
 
-    const newUser = new User({ vorname, nachname, email, passwort, rolle, faecher });
+    // Passwort-Sicherheit prüfen
+    const pwPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!pwPattern.test(passwort)) {
+      return res.status(400).json({
+        message:
+          "Passwort muss mind. 8 Zeichen lang sein & Groß-, Kleinbuchstaben, Zahlen & Sonderzeichen enthalten",
+      });
+    }
+
+    // Passwort verschlüsseln
+    const hashedPassword = await bcrypt.hash(passwort, 10);
+
+    const newUser = new User({
+      vorname,
+      nachname,
+      email,
+      passwort: hashedPassword,
+      rolle,
+      faecher,
+    });
+
     await newUser.save();
 
     res.status(201).json({ message: "Benutzer erfolgreich registriert!" });
@@ -33,18 +48,24 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Anmeldung
+// Login
 router.post("/login", async (req, res) => {
   const { email, passwort } = req.body;
 
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "Benutzer nicht gefunden" });
-    if (user.passwort !== passwort) return res.status(401).json({ message: "Falsches Passwort" });
+    if (!user)
+      return res.status(404).json({ message: "Benutzer nicht gefunden" });
+
+    const isMatch = await bcrypt.compare(passwort, user.passwort);
+    if (!isMatch)
+      return res.status(401).json({ message: "Falsches Passwort" });
 
     res.status(200).json({ message: "Login erfolgreich", user });
   } catch (err) {
-    res.status(500).json({ error: "Login fehlgeschlagen", details: err.message });
+    res
+      .status(500)
+      .json({ error: "Login fehlgeschlagen", details: err.message });
   }
 });
 
@@ -55,7 +76,8 @@ router.put("/update/:email", async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "Benutzer nicht gefunden" });
+    if (!user)
+      return res.status(404).json({ message: "Benutzer nicht gefunden" });
 
     user.vorname = vorname ?? user.vorname;
     user.nachname = nachname ?? user.nachname;
@@ -67,7 +89,9 @@ router.put("/update/:email", async (req, res) => {
     res.status(200).json({ message: "Profil erfolgreich aktualisiert", user });
   } catch (err) {
     console.error("Fehler beim Update:", err);
-    res.status(500).json({ message: "Fehler beim Updaten", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Fehler beim Updaten", error: err.message });
   }
 });
 
@@ -77,12 +101,15 @@ router.delete("/delete/:email", async (req, res) => {
 
   try {
     const result = await User.deleteOne({ email });
-    if (result.deletedCount === 0) return res.status(404).json({ message: "Benutzer nicht gefunden" });
+    if (result.deletedCount === 0)
+      return res.status(404).json({ message: "Benutzer nicht gefunden" });
 
     res.status(200).json({ message: "Benutzer erfolgreich gelöscht" });
   } catch (err) {
     console.error("Fehler beim Löschen:", err);
-    res.status(500).json({ message: "Fehler beim Löschen", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Fehler beim Löschen", error: err.message });
   }
 });
 
@@ -108,7 +135,9 @@ router.get("/ng/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-passwort -email");
     if (!user || user.rolle !== "ng") {
-      return res.status(404).json({ message: "Nachhilfegeber nicht gefunden" });
+      return res
+        .status(404)
+        .json({ message: "Nachhilfegeber nicht gefunden" });
     }
 
     res.status(200).json(user);
@@ -118,19 +147,22 @@ router.get("/ng/:id", async (req, res) => {
   }
 });
 
-// NN schickt Anfrage an NG (nur eine pro NG erlaubt)
+// NN schickt Anfrage an NG
 router.post("/anfrage", async (req, res) => {
   const { vonId, anId } = req.body;
 
-  // 🛡️ Sicherheitscheck: Sind IDs da?
   if (!vonId || !anId) {
-    return res.status(400).json({ message: "Fehlende Nutzer-ID (vonId oder anId)!" });
+    return res
+      .status(400)
+      .json({ message: "Fehlende Nutzer-ID (vonId oder anId)!" });
   }
 
   try {
     const existiert = await Anfrage.findOne({ von: vonId, an: anId });
     if (existiert) {
-      return res.status(400).json({ message: "Du hast dieser Person bereits eine Anfrage geschickt." });
+      return res
+        .status(400)
+        .json({ message: "Du hast dieser Person bereits eine Anfrage geschickt." });
     }
 
     const neueAnfrage = new Anfrage({ von: vonId, an: anId, status: "ausstehend" });
@@ -143,7 +175,7 @@ router.post("/anfrage", async (req, res) => {
   }
 });
 
-// NG erhaltet Anfrage von NN
+// NG erhaltet Anfragen
 router.get("/anfragen/:ngId", async (req, res) => {
   try {
     const anfragen = await Anfrage.find({ an: req.params.ngId })
@@ -157,13 +189,14 @@ router.get("/anfragen/:ngId", async (req, res) => {
   }
 });
 
-// NG beantwortet eine Anfrage
+// NG beantwortet Anfrage
 router.put("/anfrage/:id", async (req, res) => {
   const { status } = req.body;
 
   try {
     const anfrage = await Anfrage.findById(req.params.id).populate("von", "email");
-    if (!anfrage) return res.status(404).json({ message: "Anfrage nicht gefunden" });
+    if (!anfrage)
+      return res.status(404).json({ message: "Anfrage nicht gefunden" });
 
     anfrage.status = status;
     await anfrage.save();
@@ -180,7 +213,7 @@ router.put("/anfrage/:id", async (req, res) => {
   }
 });
 
-// NN sieht seine gesendeten Anfragen + Status
+// NN sieht gesendete Anfragen
 router.get("/anfragen-von/:nnId", async (req, res) => {
   try {
     const anfragen = await Anfrage.find({ von: req.params.nnId })
@@ -194,7 +227,7 @@ router.get("/anfragen-von/:nnId", async (req, res) => {
   }
 });
 
-// Anfrage löschen (z.B. wenn abgelehnt)
+// Anfrage löschen
 router.delete("/anfrage/:id", async (req, res) => {
   try {
     const result = await Anfrage.findByIdAndDelete(req.params.id);
