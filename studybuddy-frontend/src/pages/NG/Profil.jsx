@@ -202,7 +202,7 @@ const NGProfil = () => {
                     <textarea
                         value={bemerkung}
                         onChange={(e) => setBemerkung(e.target.value)}
-                        className="w-full h-24 bg-zinc-300 rounded px-2 py-1 text-blue-600"
+                        className="w-full h-24 bg-zinc-300 rounded px-2 py-1 text-black"
                     />
                 ) : (
                     <div className="min-h-[3rem] text-black whitespace-pre-wrap">
