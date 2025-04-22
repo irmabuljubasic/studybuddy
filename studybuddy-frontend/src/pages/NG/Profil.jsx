@@ -192,7 +192,7 @@ const NGProfil = () => {
                 <div className="flex justify-between items-start mb-2">
                     <label className="block font-semibold text-black">Bemerkung</label>
                     <span
-                        className="text-sm bg-pink-600 cursor-pointer"
+                        className="text-sm bg-pink cursor-pointer"
                         onClick={() => editBemerkung ? saveBemerkung() : setEditBemerkung(true)}
                     >
                         {editBemerkung ? "speichern" : "bearbeiten"}
