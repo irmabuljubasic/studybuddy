@@ -9,6 +9,8 @@ dotenv.config();
 
 const app = express();
 
+
+
 // 🧠 Cookie Parser MUSS VOR Routing kommen
 app.use(cookieParser());
 
