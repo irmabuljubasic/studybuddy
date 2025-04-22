@@ -7,7 +7,7 @@ const fächerOptions = [
     { value: "Mathe", label: "Mathe" },
     { value: "Deutsch", label: "Deutsch" },
     { value: "Englisch", label: "Englisch" },
-    { value: "NW", label: "NW (Chemie, Physik)" },
+    { value: "NW", label: "NW" },
     { value: "Ggp", label: "Ggp" },
     { value: "Infi", label: "Infi" },
     { value: "Swp", label: "Swp" },
@@ -44,27 +44,28 @@ const NNStartseite = () => {
     }, []);
 
     const handleSearch = async () => {
-        const faecher = selectedSubjects.map((s) => s.value);
-
+        const faecher = selectedSubjects.map((s) => s.value); // Fächer aus dem Dropdown
+      
         try {
-            const response = await fetch("http://localhost:5000/api/auth/ngs", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ faecher }),
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                setResults(data);
-            } else {
-                alert("Fehler bei der Suche: " + data.message);
-            }
+          const response = await fetch("http://localhost:5000/api/auth/ngs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ faecher }),  // Fach an Backend übergeben
+          });
+      
+          const data = await response.json();
+          if (response.ok) {
+            setResults(data);  // Setze die Suchergebnisse
+          } else {
+            alert("Fehler bei der Suche: " + data.message);
+          }
         } catch (error) {
-            console.error("Fehler beim Suchen:", error);
-            alert("Etwas ist schiefgelaufen.");
+          console.error("Fehler beim Suchen:", error);
+          alert("Etwas ist schiefgelaufen.");
         }
-    };
-
+      };
+      
+      
     const currentUser = JSON.parse(localStorage.getItem("user"));
 
     const handleAnfrage = async (ngId) => {

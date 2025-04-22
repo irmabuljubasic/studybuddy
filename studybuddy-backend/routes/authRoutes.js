@@ -119,19 +119,25 @@ router.delete("/delete/:email", verifyToken, async (req, res) => {
   }
 });
 
-// 📌 NGs nach Fach suchen
+// NGs nach Fach filtern
 router.post("/ngs", async (req, res) => {
-  try {
-    const nachhilfeGeber = await User.find({
-      rolle: "ng",
-      faecher: { $in: req.body.faecher },
-    }).select("-passwort -email");
+  const { faecher } = req.body;  // Die Fächer, nach denen gesucht wird
 
-    res.status(200).json(nachhilfeGeber);
+  try {
+    // Finde alle Nachhilfegeber (NG) mit den angegebenen Fächern
+    const nachhilfeGeber = await User.find({
+      rolle: "ng",  // Filtere nach Nachhilfegebern (NG)
+      faecher: { $in: faecher },  // Überprüfe, ob das Fach in den Fächern des NGs vorhanden ist
+    }).select("-passwort -email");  // Passwörter und E-Mails ausschließen
+
+    res.status(200).json(nachhilfeGeber);  // Rückgabe der gefundenen Nachhilfegeber
   } catch (err) {
-    res.status(500).json({ message: "Fehler bei der Suche" });
+    console.error("Fehler bei der NG-Suche:", err);
+    res.status(500).json({ message: "Serverfehler bei der NG-Suche" });
   }
 });
+
+
 
 // 📌 Einzelnes NG-Profil anzeigen
 router.get("/ng/:id", async (req, res) => {
