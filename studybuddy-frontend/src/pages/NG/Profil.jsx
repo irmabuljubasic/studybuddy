@@ -129,7 +129,7 @@ const NGProfil = () => {
     };
 
     const subjects = [
-        "Mathe", "Deutsch", "Englisch", "NW(Chemie, Physik)", "Ggp", "Infi", "Swp",
+        "Mathe", "Deutsch", "Englisch", "NW", "Ggp", "Infi", "Swp",
         "Ufw1", "Ufw2", "Bet", "Bdda", "Kobe", "Maa1", "Mela", "Mt", "Nwes", "Amec",
         "Wsft", "Rsor", "Sein"
     ].map((fach) => ({ value: fach, label: fach }));
@@ -192,7 +192,7 @@ const NGProfil = () => {
                 <div className="flex justify-between items-start mb-2">
                     <label className="block font-semibold text-black">Bemerkung</label>
                     <span
-                        className="text-sm bg-pink-600 cursor-pointer"
+                        className="text-sm text-blue-600 cursor-pointer"
                         onClick={() => editBemerkung ? saveBemerkung() : setEditBemerkung(true)}
                     >
                         {editBemerkung ? "speichern" : "bearbeiten"}
