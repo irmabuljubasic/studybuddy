@@ -25,14 +25,14 @@ const Register = () => {
     // Validierung E-Mail
     const emailPattern = /^[a-z]+\.[a-z]+\.student@htl-hallein\.at$/;
     if (!emailPattern.test(email)) {
-        alert("✖️ Bitte verwende eine gültige Schul-E-Mail (vorname.nachname.student@htl-hallein.at)");
+      alert("❌ Bitte verwende eine gültige Schul-E-Mail (vorname.nachname.student@htl-hallein.at)");
       return;
     }
 
     // Validierung Passwort
     const pwPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     if (!pwPattern.test(passwort)) {
-        alert("✖️ Passwort muss mind. 8 Zeichen lang sein und Groß-/Kleinbuchstaben, Zahlen & Sonderzeichen enthalten.");
+      alert("❌ Passwort muss mind. 8 Zeichen lang sein und Groß-/Kleinbuchstaben, Zahlen & Sonderzeichen enthalten.");
       return;
     }
 
