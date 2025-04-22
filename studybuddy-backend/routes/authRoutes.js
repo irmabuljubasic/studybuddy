@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "geheimesToken";
 
 router.use(cookieParser());
 
-// 🔐 Middleware zum Verifizieren
+// Middleware zum Verifizieren
 const verifyToken = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ message: "Nicht autorisiert" });
@@ -24,7 +24,7 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-// 📌 Registrierung
+// Registrierung
 router.post("/register", async (req, res) => {
   try {
     const { vorname, nachname, email, passwort, faecher, rolle } = req.body;
@@ -54,7 +54,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// 📌 Login
+// Login
 router.post("/login", async (req, res) => {
   const { email, passwort } = req.body;
 
@@ -82,12 +82,12 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// 📌 Logout
+// Logout
 router.post("/logout", (req, res) => {
   res.clearCookie("token").json({ message: "Erfolgreich ausgeloggt" });
 });
 
-// 📌 Profil aktualisieren (nur eigene)
+// Profil aktualisieren (nur eigene)
 router.put("/update/:email", verifyToken, async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email });
@@ -107,7 +107,7 @@ router.put("/update/:email", verifyToken, async (req, res) => {
   }
 });
 
-// 📌 Benutzer löschen
+// Benutzer löschen
 router.delete("/delete/:email", verifyToken, async (req, res) => {
   try {
     const result = await User.deleteOne({ email: req.params.email });
@@ -136,7 +136,7 @@ router.post("/ngs", async (req, res) => {
 });
 
 
-// 📌 Einzelnes NG-Profil anzeigen
+// Einzelnes NG-Profil anzeigen
 router.get("/ng/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-passwort -email");
@@ -148,7 +148,7 @@ router.get("/ng/:id", async (req, res) => {
   }
 });
 
-// 📌 NN schickt Anfrage an NG
+// NN schickt Anfrage an NG
 router.post("/anfrage", async (req, res) => {
   const { vonId, anId } = req.body;
   if (!vonId || !anId) return res.status(400).json({ message: "vonId oder anId fehlt!" });
@@ -166,7 +166,7 @@ router.post("/anfrage", async (req, res) => {
   }
 });
 
-// 📌 NG sieht Anfragen
+// NG sieht Anfragen
 router.get("/anfragen/:ngId", async (req, res) => {
   try {
     const anfragen = await Anfrage.find({ an: req.params.ngId })
@@ -179,7 +179,7 @@ router.get("/anfragen/:ngId", async (req, res) => {
   }
 });
 
-// 📌 NG beantwortet Anfrage
+// NG beantwortet Anfrage
 router.put("/anfrage/:id", async (req, res) => {
   const { status } = req.body;
 
@@ -199,7 +199,7 @@ router.put("/anfrage/:id", async (req, res) => {
   }
 });
 
-// 📌 NN sieht gesendete Anfragen
+// NN sieht gesendete Anfragen
 router.get("/anfragen-von/:nnId", async (req, res) => {
   try {
     const anfragen = await Anfrage.find({ von: req.params.nnId })
@@ -212,7 +212,7 @@ router.get("/anfragen-von/:nnId", async (req, res) => {
   }
 });
 
-// 📌 Anfrage löschen
+// Anfrage löschen
 router.delete("/anfrage/:id", async (req, res) => {
   try {
     const result = await Anfrage.findByIdAndDelete(req.params.id);
