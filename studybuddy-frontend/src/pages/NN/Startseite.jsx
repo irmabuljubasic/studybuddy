@@ -3,6 +3,7 @@ import Select from "react-select";
 import logo from "../../assets/studybuddy-logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 
+// Fächer-Optionen sortieren
 const fächerOptions = [
     { value: "Mathe", label: "Mathe" },
     { value: "Deutsch", label: "Deutsch" },
@@ -24,7 +25,7 @@ const fächerOptions = [
     { value: "Wsft", label: "Wsft" },
     { value: "Rsor", label: "Rsor" },
     { value: "Sein", label: "Sein" },
-];
+].sort((a, b) => a.label.localeCompare(b.label)); // Alphabetische Sortierung
 
 const NNStartseite = () => {
     const navigate = useNavigate();
@@ -101,7 +102,7 @@ const NNStartseite = () => {
                 <Select
                     isMulti
                     name="fächer"
-                    options={fächerOptions}
+                    options={fächerOptions} // Sortierte Fächer-Optionen
                     value={selectedSubjects}
                     onChange={setSelectedSubjects}
                     className="text-black"

@@ -128,11 +128,14 @@ const NGProfil = () => {
         }
     };
 
+    // Fächer-Array alphabetisch sortieren
     const subjects = [
         "Mathe", "Deutsch", "Englisch", "NW", "Ggp", "Infi", "Swp",
         "Ufw1", "Ufw2", "Bet", "Bdda", "Kobe", "Maa1", "Mela", "Mt", "Nwes", "Amec",
         "Wsft", "Rsor", "Sein"
-    ].map((fach) => ({ value: fach, label: fach }));
+    ]
+    .map((fach) => ({ value: fach, label: fach }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Alphabetisch sortiert
 
     return (
         <div className="w-full min-h-screen bg-white flex flex-col items-center pb-20">
@@ -206,12 +209,12 @@ const NGProfil = () => {
                     />
                 ) : (
                     <div className="min-h-[3rem] text-black whitespace-pre-wrap">
-                        {bemerkung || "z.B.: Ich bin in der 5ten Schulstufe und bin gut in diesen Themengebieten...."}
+                        {bemerkung || "z.B.: Ich bin in der 5ten Schulstufe und brauche Hilfe in..."}
                     </div>
                 )}
             </div>
 
-            {/* Bottom Nav */}
+            {/* Bottom Navigation */}
             <div className="fixed bottom-0 left-0 w-full flex">
                 <button className="w-1/3 h-14 bg-pink text-white text-lg font-medium">Profil</button>
                 <button

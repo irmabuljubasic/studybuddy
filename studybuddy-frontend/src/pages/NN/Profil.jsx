@@ -125,11 +125,14 @@ const NNProfil = () => {
         }
     };
 
+    // Fächer-Array alphabetisch sortieren
     const subjects = [
         "Mathe", "Deutsch", "Englisch", "NW", "Ggp", "Infi", "Swp",
         "Ufw1", "Ufw2", "Bet", "Bdda", "Kobe", "Maa1", "Mela", "Mt", "Nwes", "Amec",
         "Wsft", "Rsor", "Sein"
-    ].map((fach) => ({ value: fach, label: fach }));
+    ]
+    .map((fach) => ({ value: fach, label: fach }))
+    .sort((a, b) => a.label.localeCompare(b.label)); // Alphabetisch sortiert
 
     return (
         <div className="w-full min-h-screen bg-white flex flex-col items-center pb-20">
@@ -143,7 +146,7 @@ const NNProfil = () => {
 
             {/* 🔘 Logout & Löschen */}
             <div className="flex gap-4 mt-3">
-            <button
+                <button
                     onClick={handleLogout}
                     className="bg-pink text-white text-sm px-4 py-1 rounded shadow-md hover:scale-105 transition"
                 >

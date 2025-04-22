@@ -1,13 +1,13 @@
-import logo from "../../assets/studybuddy-logo.png";
+import React, { useState } from "react";
 import Select from "react-select";
+import logo from "../../assets/studybuddy-logo.png";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 const subjects = [
   "Mathe", "Deutsch", "Englisch", "NW", "Ggp", "Infi", "Swp",
   "Ufw1", "Ufw2", "Bet", "Bdda", "Kobe", "Maa1", "Mela", "Mt", "Nwes", "Amec",
   "Wsft", "Rsor", "Sein"
-].map((fach) => ({ value: fach, label: fach }));
+].map((fach) => ({ value: fach, label: fach })).sort((a, b) => a.label.localeCompare(b.label)); // Alphabetisch sortiert
 
 const Register = () => {
   const navigate = useNavigate();
@@ -128,7 +128,7 @@ const Register = () => {
             Fach (mehrere möglich)
           </label>
           <Select
-            options={subjects}
+            options={subjects} // Alphabetisch sortierte Fächer-Optionen
             isMulti
             onChange={setSelectedSubjects}
             className="text-sm"
