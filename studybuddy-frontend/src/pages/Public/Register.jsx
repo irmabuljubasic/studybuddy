@@ -4,9 +4,9 @@ import logo from "../../assets/studybuddy-logo.png";
 import { useNavigate } from "react-router-dom";
 
 const subjects = [
-  "Mathe", "Deutsch", "Englisch", "NW", "Ggp", "Infi", "Swp",
-  "Ufw1", "Ufw2", "Bet", "Bdda", "Kobe", "Maa1", "Mela", "Mt", "Nwes", "Amec",
-  "Wsft", "Rsor", "Sein"
+  "Mathematik", "Deutsch", "Englisch", "NW", "GGP", "INFI", "SWP",
+  "UFW1", "UFW2", "BET", "BDDA", "KOBE", "MAA1", "MELA", "MT", "NWES", "AMEC",
+  "WSFT", "RSOR", "SEIN"
 ].map((fach) => ({ value: fach, label: fach })).sort((a, b) => a.label.localeCompare(b.label)); // Alphabetisch sortiert
 
 const Register = () => {
