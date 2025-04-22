@@ -14,7 +14,7 @@ const NNProfil = () => {
     const [editBemerkung, setEditBemerkung] = useState(false);
     const [bemerkung, setBemerkung] = useState(user?.bemerkung || "");
 
-    // Logout
+    // 🔐 Logout
     const handleLogout = async () => {
         try {
             await fetch("http://localhost:5000/api/auth/logout", {
@@ -141,7 +141,7 @@ const NNProfil = () => {
                 <span className="text-black text-sm">{user?.email}</span>
             </div>
 
-            {/* Logout & Löschen */}
+            {/* 🔘 Logout & Löschen */}
             <div className="flex gap-4 mt-3">
             <button
                     onClick={handleLogout}

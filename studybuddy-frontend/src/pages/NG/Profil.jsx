@@ -15,7 +15,7 @@ const NGProfil = () => {
     const [editBemerkung, setEditBemerkung] = useState(false);
     const [bemerkung, setBemerkung] = useState(user?.bemerkung || "");
 
-    // Logout-Funktion
+    // 🔐 Logout-Funktion
     const handleLogout = async () => {
         try {
             await fetch("http://localhost:5000/api/auth/logout", {
@@ -144,7 +144,7 @@ const NGProfil = () => {
                 <span className="text-black text-sm">{user?.email}</span>
             </div>
 
-            {/* Logout & Löschen */}
+            {/* 🔘 Logout & Löschen */}
             <div className="flex gap-4 mt-3">
                 <button
                     onClick={handleLogout}
