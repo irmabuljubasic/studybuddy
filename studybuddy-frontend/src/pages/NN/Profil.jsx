@@ -151,7 +151,7 @@ const NNProfil = () => {
                 </button>
 
                 <button
-                    className="bg-pink text-white text-sm px-4 py-1 rounded shadow"
+                    className="bg-pink text-white text-sm px-4 py-1 rounded shadow hover:scale-105 transition"
                     onClick={handleDelete}
                 >
                     Löschen

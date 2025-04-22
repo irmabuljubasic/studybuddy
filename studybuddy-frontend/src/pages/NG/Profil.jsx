@@ -146,7 +146,7 @@ const NGProfil = () => {
 
             {/* 🔘 Logout & Löschen */}
             <div className="flex gap-4 mt-3">
-            <button
+                <button
                     onClick={handleLogout}
                     className="bg-pink text-white text-sm px-4 py-1 rounded shadow-md hover:scale-105 transition"
                 >
@@ -154,7 +154,7 @@ const NGProfil = () => {
                 </button>
 
                 <button
-                    className="bg-pink text-white text-sm px-4 py-1 rounded shadow"
+                    className="bg-pink text-white text-sm px-4 py-1 rounded shadow hover:scale-105 transition"
                     onClick={handleDelete}
                 >
                     Löschen
