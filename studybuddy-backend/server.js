@@ -9,33 +9,33 @@ dotenv.config();
 
 const app = express();
 
-// 🧠 Cookie Parser MUSS VOR Routing kommen
+// Cookie Parser MUSS VOR Routing kommen
 app.use(cookieParser());
 
-// 🔐 CORS richtig konfigurieren für Cookies
+// CORS richtig konfigurieren für Cookies
 app.use(
   cors({
-    origin: "http://localhost:5173", // deine Frontend-Vite-Adresse
-    credentials: true,               // erlaubt Cookies (wichtig!)
+    origin: "http://localhost:5173", // Frontend-Vite-Adresse
+    credentials: true,               // erlaubt Cookies 
   })
 );
 
-// 📦 Body Parser für JSON
+// Body Parser für JSON
 app.use(express.json());
 
-// 📍 API-Routen
+// API-Routen
 app.use("/api/auth", authRoutes);
 
-// 🔌 Datenbankverbindung
+// Datenbankverbindung
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-  .then(() => console.log("✅ MongoDB verbunden"))
-  .catch((err) => console.error("❌ Fehler bei MongoDB:", err));
+  .then(() => console.log("✔️ MongoDB verbunden"))
+  .catch((err) => console.error("✖️ Fehler bei MongoDB:", err));
 
-// 🚀 Server starten
+// Server starten
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server läuft auf Port ${PORT}`);
+  console.log(`✔️ Server läuft auf Port ${PORT}`);
 });

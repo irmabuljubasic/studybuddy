@@ -73,13 +73,13 @@ const NGAnfragen = () => {
                             onClick={() => handleAntwort(selected.anfrageId, "angenommen")}
                             className="bg-pink text-white px-4 py-2 rounded-full font-bold"
                         >
-                            ✅ Annehmen
+                            ✔️ Annehmen
                         </button>
                         <button
                             onClick={() => handleAntwort(selected.anfrageId, "abgelehnt")}
                             className="bg-gray-500 text-white px-4 py-2 rounded-full font-bold"
                         >
-                            ❌ Ablehnen
+                            ✖️ Ablehnen
                         </button>
                     </div>
                 </div>
@@ -94,7 +94,7 @@ const NGAnfragen = () => {
                         <div>
                             <p className="font-bold">{a.von.vorname} {a.von.nachname}</p>
                         </div>
-                        <span className="text-2xl">✉️</span>
+                        <span className="text-2xl">💌</span>
                     </div>
                 ))
             )}
