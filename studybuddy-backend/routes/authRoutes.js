@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import User from "../models/User.js";
 import Anfrage from "../models/Anfrage.js";
+//Test
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "geheimesToken";
