@@ -55,7 +55,7 @@ const NNAnfragen = () => {
                                         klicke hier, um per E-Mail Kontakt aufzunehmen:
                                     </p>
                                     <a
-                                        href={`mailto:${a.an.email}?subject=Anfrage%20bezüglich%20Nachhilfe`}
+                                        href={`mailto:${a.an.email}?subject=StudyBuddy:%20Anfrage%20bezüglich%20Nachhilfe`}
                                         className="text-blue-600 underline text-sm mt-1 inline-block break-all"
                                     >
                                         {a.an.email}
