@@ -51,11 +51,11 @@ const NNAnfragen = () => {
                             {tab === "angenommen" && (
                                 <>
                                     <p className="text-sm mt-2">
-                                        ✅ Du wurdest von <strong>{a.an.vorname} {a.an.nachname}</strong> angenommen –<br />
+                                        ✔️ Du wurdest von <strong>{a.an.vorname} {a.an.nachname}</strong> angenommen –<br />
                                         klicke hier, um per E-Mail Kontakt aufzunehmen:
                                     </p>
                                     <a
-                                        href={`mailto:${a.an.email}`}
+                                        href={`mailto:${a.an.email}?subject=Anfrage%20bezüglich%20Nachhilfe`}
                                         className="text-blue-600 underline text-sm mt-1 inline-block break-all"
                                     >
                                         {a.an.email}
@@ -70,11 +70,11 @@ const NNAnfragen = () => {
                                 </p>
                             )}
 
-                            {/* Abgelehnt mit ❌ Button */}
+                            {/* Abgelehnt mit ✖️ Button */}
                             {tab === "abgelehnt" && (
                                 <div className="flex justify-between items-start mt-2">
                                     <p className="text-sm text-red-600 w-full">
-                                        ❌ Du wurdest leider von <strong>{a.an.vorname} {a.an.nachname}</strong> abgelehnt.
+                                        ✖️ Du wurdest leider von <strong>{a.an.vorname} {a.an.nachname}</strong> abgelehnt.
                                     </p>
                                     <button
                                         onClick={async () => {
